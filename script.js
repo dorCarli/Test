@@ -1,4 +1,3 @@
-// Inhalte aus Speicher laden
 let userData = {};
 let drinks = [];
 
