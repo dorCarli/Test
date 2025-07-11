@@ -3,7 +3,7 @@ self.addEventListener('push', function(event) {
   const title = payload.notification?.title || 'Neue Nachricht';
   const options = {
     body: payload.notification?.body || '',
-    icon: '/Promille/icon-192.png', // oder dein eigenes Icon
+    icon: '/Test/icon-192.png', // oder dein eigenes Icon
   };
 
   event.waitUntil(
