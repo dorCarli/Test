@@ -64,15 +64,17 @@
     <button onclick="resetApp()" style="width:100%">Zurücksetzen</button>
   </div>
 
+  <!-- Firebase compat SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging-compat.js"></script>
+
+  <!-- Dein Script -->
   <script src="leaderboard.js"></script>
   <script src="script.js"></script>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-    import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging.js";
-
+  <script>
+    // Firebase initialisieren (nur einmal!)
     const firebaseConfig = {
       apiKey: "AIzaSyD43TYRuIZxI1pS_noOzlKCIEzUm8Q7FiQ",
       authDomain: "promille-b4bd3.firebaseapp.com",
@@ -84,10 +86,12 @@
       measurementId: "G-3L9ZRZBREV"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const messaging = getMessaging(app);
+    firebase.initializeApp(firebaseConfig);
 
-    // Service Worker erst nach Laden registrieren
+    // Messaging (compat)
+    const messaging = firebase.messaging();
+
+    // Service Worker Registrierung
     window.addEventListener("load", () => {
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/Promille/firebase-messaging-sw.js')
@@ -101,10 +105,9 @@
       }
     });
 
-    // Push Token holen in async Funktion
     async function requestPushToken(registration) {
       try {
-        const currentToken = await getToken(messaging, {
+        const currentToken = await messaging.getToken({
           vapidKey: 'BLXKIJi31DHoEr083zJkotuGDcPQFmBiM5KHwXHahGpIbcLliw0pyEinaPbIg64gaM2KxIZhwH0JTxis4RDDfZs',
           serviceWorkerRegistration: registration
         });
@@ -123,13 +126,12 @@
       }
     }
 
-    // Empfang von Push-Nachrichten
-    onMessage(messaging, (payload) => {
+    // Nachrichten empfangen
+    messaging.onMessage((payload) => {
       console.log('📬 Push-Nachricht empfangen:', payload);
-      // Optional: UI updaten oder Benachrichtigung anzeigen
+      // Optional: UI-Reaktion
     });
 
-    // Sanitization-Funktion für Firebase Keys
     function sanitizeKey(key) {
       return key.replace(/[^a-zA-Z0-9_-]/g, "_");
     }
